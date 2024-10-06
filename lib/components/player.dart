@@ -24,9 +24,11 @@ class Player extends SpriteAnimationComponent with HasGameRef<SpaceShooterGame> 
       ),
     );
 
-    position = gameRef.size / 2;
+    position = Vector2(gameRef.size.x / 2, gameRef.size.y);
 
     print("player init ${position.toString()}");
+
+
 
 
     // _bulletSpawner = SpawnComponent(
@@ -57,8 +59,9 @@ class Player extends SpriteAnimationComponent with HasGameRef<SpaceShooterGame> 
     position.add(delta);
   }
 
-  void startShooting() {
-
+  void startShooting(double newA) {
+    add(Bullet(position: (size / 2) + Vector2(-10, -80), directionAngle: newA));
+    // TODO: implement onPanStart
     // _bulletSpawner.timer.start();
     // _bulletSpawner.
 

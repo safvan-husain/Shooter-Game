@@ -4,62 +4,42 @@ import 'package:flame/experimental.dart';
 import 'package:flame/parallax.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
-
+import 'package:shooter_game/components/gun.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'components/box.dart';
 import 'components/bullet.dart';
 import 'components/enemy.dart';
 import 'components/player.dart';
 
-extension on Vector2 {
-  Vector2 copyWith(double nx, double ny) {
-    return Vector2(x + nx, y + ny);
-  }
-}
-
-class SpaceShooterGame extends FlameGame {
-  //with PanDetector, HasCollisionDetection {
+class SpaceShooterGame extends FlameGame
+    with PanDetector, HasCollisionDetection {
   late Player player;
+  double _angel = 0;
 
   @override
   Color backgroundColor() {
     return Colors.green;
   }
+
   @override
   Future<void> onLoad() async {
     await super.onLoad();
+    add(Shooter(size: Size(100, 220), paint: Paint()..color = Color.fromARGB(255, 247, 92, 3))..angle = _angel);
+    //
+    // accelerometerEventStream().listen((data) {
+    //   // print(" current x ${data.x}, total x is ${size.x} ");
+    // });
+   // Future.microtask(() async {
+   //   for (int i = 0; i < 10; i++){
+   //     print("angle is ${_angel}");
+   //     _angel += .1;
+   //     await Future.delayed(Duration(seconds: 1));
+   //   }
+   // });
 
-    var box = Box()..size = Vector2(101, 101)..anchor = Anchor.bottomCenter
-      ..position = size / 2;
-
-    add(box);
-    // final parallax = await loadParallaxComponent(
-    //   [
-    //     ParallaxImageData('stars_0.png'),
-    //     ParallaxImageData('stars_1.png'),
-    //     ParallaxImageData('stars_2.png'),
-    //   ],
-    //   baseVelocity: Vector2(0, -5),
-    //   repeat: ImageRepeat.repeat,
-    //   velocityMultiplierDelta: Vector2(0, 5),
-    // );
-    // add(parallax);
     // player = Player();
-    // player.angle = 10;
+    // player.angle = _angel;
     // add(player);
-    //
-    // Vector2 bulletPosition = size / 2; //Vector2(0, 0);
-    // print("bullet pos ${bulletPosition.toString()}");
-    //
-    // add(Bullet(position: bulletPosition, angle: 10));
-
-    // List<Bullet> bullets = List.generate(
-    //     10,
-    //     (index) => Bullet(
-    //         position: bulletPosition.copyWith(index * 10, index * 10),
-    //         angle: index.toDouble()));
-    //
-    // bullets.forEach(add);
-
     // add(
     //   SpawnComponent(
     //     factory: (index) {
@@ -71,25 +51,25 @@ class SpaceShooterGame extends FlameGame {
     // );
   }
 
-  // @override
-  // void onPanUpdate(DragUpdateInfo info) {
-  //   player.move(info.delta.global);
-  //   super.onPanUpdate(info);
-  // }
-  //
-  // @override
-  // void onPanStart(DragStartInfo info) {
-  //   super.onPanStart(info);
-  //   player.startShooting();
-  // }
-  //
-  // @override
-  // void onPanEnd(DragEndInfo info) {
-  //   super.onPanEnd(info);
-  //   player.stopShooting();
-  // }
+  @override
+  void onPanStart(DragStartInfo info) {
+    // bool isLeftTap = info.eventPosition.global.x < size.x / 2;
+    // if(isLeftTap) {
+    //   _angel -= .2;
+    // } else {
+    //   _angel += .2;
+    // }
+    // player.angle = _angel;
+    // add(Bullet(position: Vector2(size.x / 2, size.y))..angle = _angel);
+    // player.startShooting(_angel);
+    super.onPanStart(info);
+  }
 }
 
 void main() {
   runApp(GameWidget(game: SpaceShooterGame()));
 }
+
+
+
+
