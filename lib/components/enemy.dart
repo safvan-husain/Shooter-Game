@@ -6,10 +6,10 @@ import '../main.dart';
 import 'bullet.dart';
 import 'explosion.dart';
 
-class Enemy extends SpriteAnimationComponent
+class CometSmall extends SpriteComponent
     with HasGameReference<SpaceShooterGame>, CollisionCallbacks {
 
-  Enemy({
+  CometSmall({
     super.position,
   }) : super(
     size: Vector2.all(enemySize),
@@ -24,13 +24,13 @@ class Enemy extends SpriteAnimationComponent
     await super.onLoad();
     add(RectangleHitbox());
 
-    animation = await game.loadSpriteAnimation(
-      'enemy.png',
-      SpriteAnimationData.sequenced(
-        amount: 4,
-        stepTime: .2,
-        textureSize: Vector2.all(16),
-      ),
+      sprite = await game.loadSprite(
+      'stone2.png',
+      // SpriteAnimationData.sequenced(
+      //   amount: 4,
+      //   stepTime: .2,
+      //   textureSize: Vector2.all(16),
+      // ),
     );
   }
 

@@ -11,7 +11,7 @@ class Bullet extends SpriteAnimationComponent
   Bullet({super.position, this.directionAngle = 0.0})
       : super(
           size: Vector2(25, 50),
-          anchor: Anchor.topLeft,
+          anchor: Anchor.bottomCenter,
         );
 
   @override
@@ -33,12 +33,12 @@ class Bullet extends SpriteAnimationComponent
   void update(double dt) {
     super.update(dt);
 
-    if (position.y > gameRef.size.y || position.x > gameRef.size.y) return;
+    // if (position.y -  > gameRef.size.y || position.x > gameRef.size.y) return;
 
     var newP = calculateNewPosition(
-      Point(position.x, position.y),
+      position,
       angle,
-      dt * 100,
+      dt * 500,
     );
 
     position.y = newP.y;
@@ -56,20 +56,13 @@ class Bullet extends SpriteAnimationComponent
   }
 }
 
-class Point {
-  double x;
-  double y;
-
-  Point(this.x, this.y);
-}
-
-Point calculateNewPosition(
-    Point currentPosition, double angleInDegrees, double k) {
+Vector2 calculateNewPosition(
+    Vector2 currentPosition, double angleInDegrees, double k) {
 
   var angleInRadians = angleInDegrees + (270 * (pi / 180));
   var dx = k * cos(angleInRadians);
   var dy = k * sin(angleInRadians);
   var newX = currentPosition.x + dx;
   var newY = currentPosition.y + dy;
-  return Point(newX, newY);
+  return Vector2(newX, newY);
 }

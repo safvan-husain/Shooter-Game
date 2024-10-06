@@ -2,10 +2,11 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/parallax.dart';
+import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:shooter_game/components/gun.dart';
-import 'package:sensors_plus/sensors_plus.dart';
+import 'bloc/game_bloc.dart';
 import 'components/box.dart';
 import 'components/bullet.dart';
 import 'components/enemy.dart';
@@ -13,9 +14,7 @@ import 'components/player.dart';
 
 class SpaceShooterGame extends FlameGame
     with PanDetector, HasCollisionDetection {
-  late Player player;
-  double _angel = 0;
-
+  final GameCubit gameCubit = GameCubit()..initControl();
   @override
   Color backgroundColor() {
     return Colors.green;
@@ -24,52 +23,57 @@ class SpaceShooterGame extends FlameGame
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-    add(Shooter(size: Size(100, 220), paint: Paint()..color = Color.fromARGB(255, 247, 92, 3))..angle = _angel);
-    //
-    // accelerometerEventStream().listen((data) {
-    //   // print(" current x ${data.x}, total x is ${size.x} ");
-    // });
-   // Future.microtask(() async {
-   //   for (int i = 0; i < 10; i++){
-   //     print("angle is ${_angel}");
-   //     _angel += .1;
-   //     await Future.delayed(Duration(seconds: 1));
-   //   }
-   // });
-
-    // player = Player();
-    // player.angle = _angel;
-    // add(player);
-    // add(
-    //   SpawnComponent(
-    //     factory: (index) {
-    //       return Enemy();
-    //     },
-    //     period: 1,
-    //     area: Rectangle.fromLTWH(0, 0, size.x, -Enemy.enemySize),
-    //   ),
-    // );
+    final parallax = await loadParallaxComponent(
+      [
+        ParallaxImageData('stars_0.png'),
+        ParallaxImageData('stars_1.png'),
+        ParallaxImageData('stars_2.png'),
+      ],
+      baseVelocity: Vector2(0, -5),
+      repeat: ImageRepeat.repeat,
+      velocityMultiplierDelta: Vector2(0, 5),
+    );
+    add(parallax);
+    add(
+      SpawnComponent(
+        factory: (index) {
+          return CometSmall();
+        },
+        period: 1,
+        area: Rectangle.fromLTWH(0, 0, size.x, -CometSmall.enemySize),
+      ),
+    );
+    await add(
+      FlameBlocProvider<GameCubit, GameState>(
+        create: () => gameCubit,
+        children: [
+          Gun(
+            Vector2(100, 250),
+            Paint()..color = Color.fromARGB(255, 247, 92, 3),
+          )..position = Vector2(size.x / 2, size.y + 30),
+        ],
+      ),
+    );
   }
 
   @override
   void onPanStart(DragStartInfo info) {
-    // bool isLeftTap = info.eventPosition.global.x < size.x / 2;
-    // if(isLeftTap) {
-    //   _angel -= .2;
-    // } else {
-    //   _angel += .2;
-    // }
-    // player.angle = _angel;
-    // add(Bullet(position: Vector2(size.x / 2, size.y))..angle = _angel);
-    // player.startShooting(_angel);
+    // add(Bullet()..position = size / 2..angle = gameCubit.state.angle);
+
+    add(
+      Bullet()
+        ..angle = gameCubit.state.angle
+        ..position = calculateNewPosition(
+          Vector2(size.x / 2, size.y + 30),
+          gameCubit.state.angle,
+          250,
+        ),
+    );
     super.onPanStart(info);
   }
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(GameWidget(game: SpaceShooterGame()));
 }
-
-
-
-
