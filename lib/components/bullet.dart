@@ -32,12 +32,10 @@ class Bullet extends SpriteAnimationComponent
   @override
   void update(double dt) {
     super.update(dt);
-
-    // if (position.y -  > gameRef.size.y || position.x > gameRef.size.y) return;
-
     var newP = calculateNewPosition(
       position,
       angle,
+      //bullet speed variable -> 500
       dt * 500,
     );
 
@@ -57,11 +55,11 @@ class Bullet extends SpriteAnimationComponent
 }
 
 Vector2 calculateNewPosition(
-    Vector2 currentPosition, double angleInDegrees, double k) {
+    Vector2 currentPosition, double angleInDegrees, double distance) {
 
   var angleInRadians = angleInDegrees + (270 * (pi / 180));
-  var dx = k * cos(angleInRadians);
-  var dy = k * sin(angleInRadians);
+  var dx = distance * cos(angleInRadians);
+  var dy = distance * sin(angleInRadians);
   var newX = currentPosition.x + dx;
   var newY = currentPosition.y + dy;
   return Vector2(newX, newY);

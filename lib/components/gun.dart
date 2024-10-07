@@ -1,12 +1,10 @@
-import 'dart:ui';
-
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:shooter_game/bloc/game_bloc.dart';
-import 'package:shooter_game/main.dart';
 
-class Gun extends SpriteAnimationComponent with FlameBlocListenable<GameCubit, GameState> {
+class Gun extends SpriteAnimationComponent
+    with FlameBlocListenable<GameCubit, GameState> {
   final Vector2 _size;
   final Paint _paint;
 
@@ -25,6 +23,7 @@ class Gun extends SpriteAnimationComponent with FlameBlocListenable<GameCubit, G
     double space = 3;
     double sideGunW = (totalW - primaryGunW - (2 * space)) / 2;
     double sideGunH = totalH * .4;
+    //left side element
     drawSideGun(
       Vector2(sideGunW, sideGunH),
       canvas,
@@ -39,7 +38,7 @@ class Gun extends SpriteAnimationComponent with FlameBlocListenable<GameCubit, G
       0,
       sideGunW + space,
     );
-
+    //right side element
     drawSideGun(
       Vector2(sideGunW, sideGunH),
       canvas,
@@ -49,11 +48,6 @@ class Gun extends SpriteAnimationComponent with FlameBlocListenable<GameCubit, G
     );
     super.render(canvas);
   }
-
-  // @override
-  // Future<void> update(dt) async {
-  //   super.update(dt);
-  // }
 
   @override
   void onNewState(state) {
