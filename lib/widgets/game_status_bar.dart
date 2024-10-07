@@ -13,15 +13,17 @@ class GameStatus extends StatelessWidget {
         alignment: Alignment.topRight,
         child: Container(
           padding: const EdgeInsets.all(10),
-          height: 80,
-          width: 100,
+          height: 140,
+          width: 120,
           child: BlocBuilder<GameCubit, GameState>(
             builder: (context, state) {
               return Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <List>[
                   [Icons.temple_buddhist_outlined, state.cometDestroyed],
-                  [Icons.timer, state.timer.elapsed.toString().substring(2, 7)]
+                  [Icons.timer, state.timer.elapsed.toString().substring(2, 7),
+                  ],
+                  [Icons.health_and_safety_outlined, "${state.health.toInt()}%"]
                 ]
                     .map((e) => Row(
                           children: [

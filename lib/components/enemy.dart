@@ -5,15 +5,21 @@ import 'package:flame/components.dart';
 import '../main.dart';
 import 'bullet.dart';
 import 'explosion.dart';
+import 'gun.dart';
 
-class CometSmall extends SpriteComponent
+enum CometType { small, medium, big }
+
+class Comet extends SpriteComponent
     with HasGameReference<SpaceShooterGame>, CollisionCallbacks {
   final double speed;
-  CometSmall({
-    super.position,
-    required this.speed,
-  }) : super(
-          size: Vector2.all(cometSize),
+  final CometType type;
+  Comet({super.position, required this.speed, required this.type})
+      : super(
+          size: Vector2.all(switch (type) {
+            CometType.small => cometSize,
+            CometType.medium => cometSize * 1.2,
+            _ => cometSize * 1.7
+          }),
           anchor: Anchor.center,
         );
 
@@ -24,7 +30,10 @@ class CometSmall extends SpriteComponent
     await super.onLoad();
     add(RectangleHitbox());
 
-    sprite = await game.loadSprite('stone2.png');
+    sprite = switch(type) {
+      CometType.small => await game.loadSprite('stone2.png'),
+      _ => await game.loadSprite('stone3.png')
+    };
   }
 
   @override
@@ -39,6 +48,10 @@ class CometSmall extends SpriteComponent
       removeFromParent();
       other.removeFromParent();
       game.add(Explosion(position: position));
+    } else if (other is Gun) {
+      removeFromParent();
+      game.add(Explosion(position: position));
+      game.gameCubit.damageHealth(type);
     }
   }
 
@@ -50,6 +63,8 @@ class CometSmall extends SpriteComponent
 
     if (position.y > game.size.y) {
       removeFromParent();
+      game.gameCubit.damageHealth(type);
+      game.add(Explosion(position: position));
     }
   }
 }

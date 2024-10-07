@@ -32,11 +32,10 @@ class Bullet extends SpriteAnimationComponent
   @override
   void update(double dt) {
     super.update(dt);
-    var newP = calculateNewPosition(
+    var newP = game.gameCubit.calculateNewPosition(
       position,
       angle,
-      //bullet speed variable -> 500
-      dt * 500,
+      dt * game.gameCubit.bulletSpeed,
     );
 
     position.y = newP.y;
@@ -54,13 +53,3 @@ class Bullet extends SpriteAnimationComponent
   }
 }
 
-Vector2 calculateNewPosition(
-    Vector2 currentPosition, double angleInDegrees, double distance) {
-
-  var angleInRadians = angleInDegrees + (270 * (pi / 180));
-  var dx = distance * cos(angleInRadians);
-  var dy = distance * sin(angleInRadians);
-  var newX = currentPosition.x + dx;
-  var newY = currentPosition.y + dy;
-  return Vector2(newX, newY);
-}

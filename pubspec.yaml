@@ -21,6 +21,8 @@ dependencies:
   flame_bloc:
   flutter_bloc:
   bloc:
+  google_fonts:
+  path_provider:
 
 
   # The following adds the Cupertino Icons font to your application.

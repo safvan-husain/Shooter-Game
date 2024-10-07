@@ -1,3 +1,4 @@
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,12 @@ class Gun extends SpriteAnimationComponent
           anchor: Anchor.bottomCenter,
           paint: _paint,
         );
+
+  @override
+  Future<void> onLoad() async {
+    add(RectangleHitbox(collisionType: CollisionType.passive));
+    super.onLoad();
+  }
 
   @override
   void render(canvas) async {

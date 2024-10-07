@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
@@ -7,42 +9,55 @@ import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:shooter_game/components/gun.dart';
+import 'package:shooter_game/widgets/game_over_overlay.dart';
 import 'bloc/game_bloc.dart';
 import 'components/bullet.dart';
 import 'components/enemy.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'widgets/damage_overlay.dart';
 import 'widgets/game_status_bar.dart';
 
 const gameStatusBar = 'status-bar';
+const redOverlay = "red";
+const gameOver = "game-over";
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(GameWidget(
     game: SpaceShooterGame(),
     overlayBuilderMap: {
-      gameStatusBar: (BuildContext context, SpaceShooterGame game) {
-        return BlocProvider(
-          create: (context) => game.gameCubit,
-          child: const GameStatus(),
-        );
-      },
+      gameStatusBar: (context, SpaceShooterGame game) => BlocProvider(
+            create: (c) => game.gameCubit,
+            child: const GameStatus(),
+          ),
+      redOverlay: (context, game) => const RedOverlay(),
+      gameOver: (context, SpaceShooterGame game) =>
+          GameOverOverlay(cubit: game.gameCubit),
     },
   ));
 }
 
+Widget wrapWithBloc(Cubit cubit, Widget widget) {
+  return BlocProvider(
+    create: (c) => cubit,
+    child: widget,
+  );
+}
+
 class SpaceShooterGame extends FlameGame
     with PanDetector, HasCollisionDetection {
-  final GameCubit gameCubit = GameCubit()..initControl();
-  late ParallaxComponent parallaxComponent;
+  final GameCubit gameCubit = GameCubit();
   late SpawnComponent comets;
 
   @override
   Future<void> onLoad() async {
+    gameCubit.initControl(game: this);
     overlays.add(gameStatusBar);
     await super.onLoad();
+    camera.viewfinder.anchor = Anchor.topLeft;
     //background stars
-    parallaxComponent = await loadParallaxComponent(
+    gameCubit.parallaxComponent = await loadParallaxComponent(
       [
         ParallaxImageData('stars_0.png'),
         ParallaxImageData('stars_1.png'),
@@ -54,16 +69,18 @@ class SpaceShooterGame extends FlameGame
     );
     comets = SpawnComponent(
       factory: (index) {
-        return gameCubit.getComet();
+        //get comet with speed corresponding to level
+        return gameCubit.getRandomComet();
       },
       period: 1,
-      area: Rectangle.fromLTWH(0, 0, size.x, -CometSmall.cometSize),
+      area: Rectangle.fromLTWH(0, 0, size.x, -Comet.cometSize),
     );
-    add(parallaxComponent);
-    //comets (target)
-    add(comets);
+    //adding components to world to use camera.
+    world.add(gameCubit.parallaxComponent);
+    //(target)
+    world.add(comets);
     //shooting gun
-    await add(
+    await world.add(
       FlameBlocProvider<GameCubit, GameState>(
         create: () => gameCubit,
         children: [
@@ -84,38 +101,7 @@ class SpaceShooterGame extends FlameGame
 
   @override
   void onPanStart(DragStartInfo info) {
-    print("camera angele is ${camera.viewfinder.angle} and current ${CameraComponent.currentCamera?.viewfinder.angle}");
-    shakeGame();
-
-    // gameCubit.incrementCometSpeed();
-
-    //update background star speed if not null
-    // if(parallaxComponent.parallax != null) {
-    //   parallaxComponent.parallax =
-    //       gameCubit.getFasterParallax(parallaxComponent.parallax!);
-    // }
-
-    add(
-      Bullet()
-        ..angle = gameCubit.state.angle
-        //calculating the top position of gun
-        //for the bullet to show up
-        ..position = calculateNewPosition(
-          Vector2(size.x / 2, size.y + 30),
-          gameCubit.state.angle,
-          //gun height
-          250,
-        ),
-    );
+    gameCubit.shoot();
     super.onPanStart(info);
-  }
-
-  void shakeGame() {
-    // camera = CameraComponent.withFixedResolution(
-    //     height: camera.viewport.size.y,
-    //     width: camera.viewport.size.x,
-    //     viewfinder: Viewfinder()
-    //       ..angle = camera.viewfinder.angle + .5);
-    camera.moveBy(Vector2(-10, 30));
   }
 }
