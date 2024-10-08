@@ -1,16 +1,18 @@
-# shooter_game
+# Shooter Game
 
-A new Flutter project.
+A space shooter game built using Flame engine in Flutter
 
-## Getting Started
+## Game Logic
 
-This project is a starting point for a Flutter application.
+* When miss the target it will affect the user health
+* Overtime speed of the target and bullet increase
 
-A few resources to get you started if this is your first Flutter project:
+## Controls
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+* The shooting direction controlled by Accelerometer ( tilting horizontal )
+* Tap anywhere on the screen to shoot
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Development
+* State manged using Bloc
+* Built using flame
+
