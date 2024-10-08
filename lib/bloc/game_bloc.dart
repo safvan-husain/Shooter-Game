@@ -4,40 +4,13 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:flame/parallax.dart';
-import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shooter_game/components/enemy.dart';
 import 'package:shooter_game/main.dart';
 
 import '../components/bullet.dart';
 
-class GameState {
-  final double angle;
-  final Stopwatch timer;
-  final int cometDestroyed;
-  final double health;
-  const GameState(
-      {required this.angle,
-      required this.timer,
-      this.cometDestroyed = 0,
-      this.health = 100});
-
-  GameState copyWith({double? angle, int? cometDestroyed, double? health}) {
-    return GameState(
-        angle: angle ?? this.angle,
-        timer: timer,
-        cometDestroyed: cometDestroyed ?? this.cometDestroyed,
-        health: health ?? this.health);
-  }
-
-  factory GameState.initial() {
-    return GameState(
-      angle: 0,
-      timer: Stopwatch()..start(),
-    );
-  }
-}
+part 'game_state.dart';
 
 class GameCubit extends Cubit<GameState> {
   GameCubit() : super(GameState.initial());
@@ -52,6 +25,7 @@ class GameCubit extends Cubit<GameState> {
 
   void initControl({required FlameGame game}) async {
     _game = game;
+    //handling direction of the gun.
     accelerometerEventStream().listen((data) {
       if (data.x < -4 || data.x > 4) return;
 
@@ -67,7 +41,7 @@ class GameCubit extends Cubit<GameState> {
     _game.resumeEngine();
   }
 
-  void hitComet() {
+  void onHitComet() {
     hitCometEffect();
     emit(state.copyWith(cometDestroyed: state.cometDestroyed + 1));
   }
@@ -146,12 +120,5 @@ class GameCubit extends Cubit<GameState> {
     var newX = currentPosition.x + dx;
     var newY = currentPosition.y + dy;
     return Vector2(newX, newY);
-  }
-
-  @override
-  Future<void> close() {
-    print("close called");
-    throw 'close called';
-    return super.close();
   }
 }

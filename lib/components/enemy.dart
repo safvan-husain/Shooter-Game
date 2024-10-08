@@ -1,5 +1,4 @@
 import 'package:flame/collisions.dart';
-import 'package:flutter/material.dart';
 import 'package:flame/components.dart';
 
 import '../main.dart';
@@ -44,7 +43,7 @@ class Comet extends SpriteComponent
     super.onCollisionStart(intersectionPoints, other);
 
     if (other is Bullet) {
-      game.gameCubit.hitComet();
+      game.gameCubit.onHitComet();
       removeFromParent();
       other.removeFromParent();
       game.add(Explosion(position: position));

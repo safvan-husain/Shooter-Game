@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/experimental.dart';
@@ -11,7 +8,6 @@ import 'package:flame/game.dart';
 import 'package:shooter_game/components/gun.dart';
 import 'package:shooter_game/widgets/game_over_overlay.dart';
 import 'bloc/game_bloc.dart';
-import 'components/bullet.dart';
 import 'components/enemy.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,13 +34,6 @@ void main() {
   ));
 }
 
-Widget wrapWithBloc(Cubit cubit, Widget widget) {
-  return BlocProvider(
-    create: (c) => cubit,
-    child: widget,
-  );
-}
-
 class SpaceShooterGame extends FlameGame
     with PanDetector, HasCollisionDetection {
   final GameCubit gameCubit = GameCubit();
@@ -52,9 +41,9 @@ class SpaceShooterGame extends FlameGame
 
   @override
   Future<void> onLoad() async {
+    await super.onLoad();
     gameCubit.initControl(game: this);
     overlays.add(gameStatusBar);
-    await super.onLoad();
     camera.viewfinder.anchor = Anchor.topLeft;
     //background stars
     gameCubit.parallaxComponent = await loadParallaxComponent(
